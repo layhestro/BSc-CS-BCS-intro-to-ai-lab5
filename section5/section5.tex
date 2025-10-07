@@ -1,152 +1,57 @@
 \section{Reflection Questions}
 
-\subsection{Question 5.1: Model Deployment for Mobile Application}
+\subsection{Question 5.1: Model Deployment for Mobile}
 
-\textbf{Question}: If you had to deploy one of your models to classify handwritten digits on a mobile app (where model size matters), which would you choose and why?
+\textbf{Choice:} Original CNN (2-layer)
 
-\textbf{Answer}:
-
-I would choose the \textbf{original CNN (2-layer)} for mobile deployment.
-
-\textbf{Justification:}
+\textbf{Justification:} The 2-layer CNN offers the best balance for mobile deployment:
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|c|c|}
+\begin{tabular}{|l|c|c|}
 \hline
-\textbf{Model} & \textbf{Parameters} & \textbf{Val Accuracy} & \textbf{Size (MB)} \\ \hline
-Best MLP (Dropout) & 535,818 & 98.31\% & $\sim$2.1 \\ \hline
-CNN (2 layers) & 421,642 & 99.03\% & $\sim$1.7 \\ \hline
-Deeper CNN (3 layers) & 458,570 & 99.29\% & $\sim$1.8 \\ \hline
+\textbf{Model} & \textbf{Parameters} & \textbf{Val Accuracy} \\ \hline
+Best MLP (Dropout) & 535,818 & 98.31\% \\ \hline
+CNN (2 layers) & 421,642 & 99.03\% \\ \hline
+Deeper CNN (3 layers) & 458,570 & 99.29\% \\ \hline
 \end{tabular}
 \caption{Model comparison for mobile deployment}
-\label{tab:mobile-deployment}
 \end{table}
 
-The original CNN is the optimal choice for mobile deployment because it offers the best balance of performance, efficiency, and resource constraints:
+The 2-layer CNN is 21\% smaller than the MLP and 8\% smaller than the deeper CNN, while achieving 99.03\% accuracy (only 0.26\% less than the deeper CNN). Smaller size means faster downloads, less storage, lower memory consumption, faster inference, and better battery life, all critical for mobile devices.
+
+\subsection{Question 5.2: Critique of "More is Better"}
+
+This approach is really flawed:
 
 \begin{enumerate}
-    \item \textbf{Smallest model size}: With 421,642 parameters, it's 21\% smaller than the MLP (535,818 parameters) and 8\% smaller than the deeper CNN (458,570 parameters). Smaller models mean faster downloads, less storage usage, and lower memory consumption on resource-constrained mobile devices.
+    \item \textbf{Overfitting}: More capacity makes memorization easier. Our baseline achieved 99.79\% training but only 97.74\% validation (2.05\% gap), showing overfitting. Adding more layers would worsen this.
     
-    \item \textbf{Superior accuracy}: Despite being the smallest model, it achieves 99.03\% validation accuracy---higher than the best MLP (98.31\%) and only marginally lower than the deeper CNN (99.29\%). The 0.26\% accuracy difference from the deeper CNN is negligible for practical digit recognition.
+    \item \textbf{Diminishing returns}: Our deeper CNN experiment proved this. Adding a third layer improved accuracy by only 0.26\% despite 8.8\% more parameters.
     
-    \item \textbf{Faster inference}: Fewer parameters mean faster forward passes, critical for responsive mobile applications. The 2-layer CNN can process images more quickly than both the MLP and deeper CNN, providing better user experience.
+    \item \textbf{Bayes error rate}: Every dataset has irreducible error from noise and ambiguity. Pursuing 100\% accuracy means overfitting to noise, not achieving perfection.
     
-    \item \textbf{Energy efficiency}: Smaller models consume less power during inference, extending battery life---a crucial consideration for mobile devices.
-    
-    \item \textbf{Edge device compatibility}: The compact architecture is more likely to fit within the memory constraints of edge devices and can potentially be quantized or pruned further for deployment on low-power hardware.
+    \item \textbf{Better alternatives}: Dropout (98.31\%) and early stopping (97.90\%) achieved better generalization than simply training a large model (97.74\%).
 \end{enumerate}
 
-The deeper CNN's marginal 0.26\% accuracy improvement does not justify its 8\% larger size for a mobile application. The original CNN represents the sweet spot where model efficiency meets performance requirements.
+\textbf{Better approach:} Analyze train-validation gap, apply regularization (dropout, early stopping), use appropriate architectures (CNNs for images), and accept that 100\% accuracy is neither achievable nor desirable.
 
-\subsection{Question 5.2: Critique of "More is Better" Approach}
-
-\textbf{Question}: A fellow student says: "I'll just add more layers and neurons until I get 100\% accuracy." What would you tell them about this approach?
-
-\textbf{Answer}:
-
-This approach is fundamentally flawed and demonstrates several misconceptions about machine learning:
-
-\begin{enumerate}
-    \item \textbf{Overfitting inevitability}: Adding more layers and neurons increases model capacity, making it easier to memorize the training data rather than learn generalizable patterns. Our baseline MLP achieved 99.79\% training accuracy but only 97.74\% validation accuracy, with a 2.1\% gap indicating overfitting. Adding more capacity would worsen this problem, not solve it.
-    
-    \item \textbf{Diminishing returns}: Our experiment with the deeper CNN (Part 4) demonstrated this directly. Adding a third convolutional layer improved validation accuracy by only 0.26\% (from 99.03\% to 99.29\%) while increasing parameters by 8.8\%. The improvement was marginal despite added complexity, illustrating the law of diminishing returns.
-    
-    \item \textbf{Bayes error rate}: Every dataset has an irreducible error rate due to noise, labeling errors, and inherent ambiguity. For MNIST, even humans occasionally misclassify ambiguous digits. Pursuing 100\% accuracy likely means overfitting to noise rather than achieving genuine perfection.
-    
-    \item \textbf{Generalization vs. memorization}: The goal of machine learning is to generalize to unseen data, not to perfectly fit training data. Our experiments showed that techniques like dropout (98.31\% validation) and early stopping (97.90\% validation) achieve better generalization than simply training a large model for many epochs (97.74\% validation).
-    
-    \item \textbf{Computational costs}: Larger models require more memory, longer training time, and greater inference latency. Our deeper CNN took similar training time but offered minimal improvement, making it an inefficient use of computational resources.
-    
-    \item \textbf{Occam's Razor}: Simpler models that achieve comparable performance are preferable. They're easier to understand, debug, deploy, and maintain. Our 2-layer CNN (99.03\% with 421K parameters) outperformed our best MLP (98.31\% with 536K parameters) while being simpler and smaller.
-\end{enumerate}
-
-\textbf{Better approach}: Instead of blindly increasing model size, one should:
-\begin{itemize}
-    \item Analyze the train-validation gap to diagnose overfitting vs. underfitting
-    \item Apply regularization techniques (dropout, early stopping, weight decay)
-    \item Use architectures suited to the data type (CNNs for images)
-    \item Implement proper validation methodology to detect when additional capacity helps vs. hurts
-    \item Accept that 100\% accuracy is neither achievable nor desirable for most real-world tasks
-\end{itemize}
-
-\subsection{Question 5.3: Practical Strategies for Improving Performance}
-
-\textbf{Question}: Based on your experiments, list two practical strategies for improving a neural network's performance while avoiding overfitting when you cannot change the data.
-
-\textbf{Answer}:
+\subsection{Question 5.3: Strategies for Avoiding Overfitting}
 
 \subsubsection{Strategy 1: Dropout Regularization}
 
-\textbf{Implementation}: Add dropout layers that randomly deactivate a fraction of neurons during training.
+\textbf{Implementation:} Add dropout layers that randomly deactivate neurons during training ($rate=0.3$).
 
-\textbf{Evidence from experiments}:
-\begin{itemize}
-    \item Applied dropout with rate=0.3 (30\% of neurons dropped)
-    \item Validation accuracy improved from 97.74\% (baseline) to 98.31\%
-    \item Train-validation gap reduced from 2.05\% to 1.08\%
-    \item Loss curves remained parallel instead of diverging
-\end{itemize}
+\textbf{Evidence:} Improved validation accuracy from 97.74\% to 98.31\% and reduced train-val gap from 2.05\% to 1.08\%.
 
-\textbf{Why it works}: Dropout prevents co-adaptation of neurons by forcing the network to learn redundant representations. Since neurons cannot rely on specific other neurons always being present, the network learns more robust features that generalize better to unseen data. This acts as an ensemble of multiple sub-networks, improving generalization without increasing model size.
-
-\textbf{Best practices}:
-\begin{itemize}
-    \item Typical dropout rates: 0.2--0.5 for fully-connected layers
-    \item Apply after activation functions
-    \item Use lower rates (0.1--0.25) for convolutional layers
-    \item Dropout is disabled during inference (testing)
-\end{itemize}
+\textbf{Why it works:} Forces the network to learn redundant representations, neurons cannot rely on specific others always being present, so the network learns more robust, generalizable features.
 
 \subsubsection{Strategy 2: Early Stopping}
 
-\textbf{Implementation}: Monitor validation loss during training and stop when it stops improving for a specified number of epochs (patience).
+\textbf{Implementation:} Monitor validation loss and stop when it plateaus for a patience period (5 epochs).
 
-\textbf{Evidence from experiments}:
-\begin{itemize}
-    \item Set patience=5 epochs
-    \item Training stopped at epoch 11 instead of 50 (78\% reduction)
-    \item Validation accuracy: 97.90\% vs. 97.74\% baseline (slight improvement)
-    \item Prevented the validation loss increase observed in baseline after epoch 10
-\end{itemize}
+\textbf{Evidence:} Training stopped at epoch 11 instead of 50 (78\% reduction) with slight improvement (97.90\% vs 97.74\%).
 
-\textbf{Why it works}: Neural networks initially learn general patterns, then progressively fit training-specific details (including noise). Early stopping catches the model at the point where it has learned general patterns but hasn't yet started memorizing training-specific noise. This is evident in our baseline model where validation loss began increasing after epoch 10 while training loss continued decreasing.
+\textbf{Why it works:} Networks initially learn general patterns, then progressively fit training-specific noise. Early stopping catches the model before memorization begins, as evidenced by our baseline's validation loss increasing after epoch 10.
 
-\textbf{Best practices}:
-\begin{itemize}
-    \item Monitor validation loss, not validation accuracy (more sensitive)
-    \item Patience of 5--10 epochs is typical
-    \item Save the best model weights (lowest validation loss) during training
-    \item Restore best weights at the end rather than using final weights
-\end{itemize}
-
-\subsubsection{Comparison of Strategies}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|c|c|c|}
-\hline
-\textbf{Strategy} & \textbf{Val Acc} & \textbf{Training Time} & \textbf{Implementation} \\ \hline
-None (Baseline) & 97.74\% & 50 epochs & Simple \\ \hline
-Dropout & 98.31\% & 50 epochs & Moderate \\ \hline
-Early Stopping & 97.90\% & 11 epochs & Simple \\ \hline
-\end{tabular}
-\caption{Trade-offs between regularization strategies}
-\label{tab:strategy-comparison}
-\end{table}
-
-\textbf{Recommendation}: Use \textbf{both strategies together}. Dropout provides better final accuracy, while early stopping reduces training time. Combining them would likely yield the best results: apply dropout for better generalization, then use early stopping to find the optimal number of training epochs efficiently.
-
-\subsection{Bonus: Additional Strategies}
-
-Beyond the two main strategies tested, other effective techniques include:
-
-\begin{itemize}
-    \item \textbf{Architecture selection}: Using CNNs instead of MLPs for image data improved validation accuracy from 98.31\% to 99.03\% while reducing parameters by 21\%. Choosing architectures that match data structure is crucial.
-    
-    \item \textbf{Learning rate scheduling}: Our high learning rate experiment (Part 4) showed catastrophic failure with LR=0.1. Using learning rate decay or adaptive optimizers (Adam, AdaGrad) can improve convergence.
-    
-    \item \textbf{Batch normalization}: Normalizing activations between layers can accelerate training and provide mild regularization effects.
-    
-    \item \textbf{Data augmentation}: While the question specified we cannot change the data, in practice, augmentation (rotations, translations, noise) creates synthetic training examples that improve generalization.
-\end{itemize}
+\textbf{Recommendation:} Use both together, dropout for better generalization, early stopping for efficiency. Our experiments suggest combining them would yield optimal results.
