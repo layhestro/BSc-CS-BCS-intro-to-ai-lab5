@@ -44,12 +44,8 @@ Testing with $\text{learning rate} = 0.1$ (100× larger than optimal 0.001):
 
 \subsubsection{Question 4.2: What happened with high learning rate?}
 
-Training with $LR=0.1$ resulted in complete failure, achieving only 10.5\% validation accuracy (barely above random guessing). The learning rate controls step size in gradient descent: $w_{new} = w_{old} - \alpha \cdot \nabla L$. A 100× larger learning rate causes:
+Training with a learning rate of 0.1 completely failed, the model only got 10.5\% accuracy, which is barely better than random guessing (10\% for 10 digits). 
 
-\begin{itemize}
-    \item \textbf{Overshooting}: Steps too large to converge; the model bounces around the loss landscape instead of settling into a minimum
-    \item \textbf{Instability}: Weight updates are massive, preventing the model from learning meaningful features
-    \item \textbf{Loss explosion}: Training loss fluctuates wildly (around 2.3-10.54) with no downward trend
-\end{itemize}
+The problem is that the learning rate controls how big of a step the model takes when updating its weights. When I used 0.001, it took small, careful steps and gradually improved. But with 0.1 (which is 100 times bigger), the steps are way too large. Instead of carefully walking down to the bottom of a valley, the model is taking such huge leaps that it keeps overshooting and bouncing around randomly. The training loss just fluctuates wildly between 2.3 and 10.54 with no pattern.
 
-This demonstrates that learning rate is one of the most critical hyperparameters, even advanced optimizers like Adam cannot compensate for grossly inappropriate values.
+This experiment really showed me that learning rate is probably the most important hyperparameter to get right.

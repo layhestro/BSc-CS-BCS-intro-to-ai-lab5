@@ -33,16 +33,10 @@ The CNN has 21.3\% fewer parameters (114,176 reduction) than the MLP.
 
 \subsection{Question 3.2: Why do CNNs perform better?}
 
-Despite having fewer parameters, the CNN achieves superior validation accuracy (99.03\% vs 98.31\%) with minimal overfitting. CNNs are better suited for image data because:
+Even with fewer parameters, the CNN gets better validation accuracy (99.03\% vs 98.31\%) and shows less overfitting. This makes sense because CNNs are designed specifically for images:
 
-\begin{enumerate}
-    \item \textbf{Spatial structure preservation}: Convolutional layers maintain 2D spatial relationships between pixels, while MLPs flatten images and destroy this information.
-    
-    \item \textbf{Translation invariance}: Weight sharing allows CNNs to recognize patterns regardless of position—a digit in any corner is recognized equally well.
-    
-    \item \textbf{Parameter efficiency}: Convolutional filters share weights across spatial locations. A 3×3 filter with 32 channels needs only 288 parameters, versus 25,088 for an equivalent fully-connected layer.
-    
-    \item \textbf{Hierarchical features}: CNNs learn low-level features (edges) in early layers and combine them into high-level features (shapes, objects) in deeper layers, mimicking human vision.
-\end{enumerate}
+First, CNNs keep the 2D structure of the image intact. When we use an MLP, we flatten the 28×28 image into a single list of 784 pixels, which loses information about which pixels are next to each other. CNNs use convolutional layers that process the image in its original 2D form, so they can detect patterns like edges and shapes more naturally. 
 
-The CNN demonstrates clear superiority: 21.3\% fewer parameters, 0.72\% higher accuracy, and better generalization (0.77\% train-val gap vs 1.08\% for MLP).
+Second, CNNs have something called weight sharing where the same filter slides across the entire image. This means a CNN can recognize a digit whether it's in the top-left corner or bottom-right corner. Plus, this sharing makes CNNs way more efficient, a 3×3 filter needs only 288 parameters while a fully-connected layer would need 25,088 for the same job.
+
+The results speak for themselves: the CNN has 21.3\% fewer parameters, 0.72\% better accuracy, and less overfitting (0.77\% gap vs 1.08\%).

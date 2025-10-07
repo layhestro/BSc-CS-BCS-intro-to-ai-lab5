@@ -4,7 +4,7 @@
 
 \textbf{Choice:} Original CNN (2-layer)
 
-\textbf{Justification:} The 2-layer CNN offers the best balance for mobile deployment:
+\textbf{Justification:} The 2-layer CNN offers the best balance for mobile:
 
 \begin{table}[h]
 \centering
@@ -22,36 +22,34 @@ The 2-layer CNN is 21\% smaller than the MLP and 8\% smaller than the deeper CNN
 
 \subsection{Question 5.2: Critique of "More is Better"}
 
-This approach is really flawed:
+This approach has some serious problems:
 
 \begin{enumerate}
-    \item \textbf{Overfitting}: More capacity makes memorization easier. Our baseline achieved 99.79\% training but only 97.74\% validation (2.05\% gap), showing overfitting. Adding more layers would worsen this.
+    \item \textbf{Overfitting risk}: More layers means the model can memorize training data more easily. Our baseline got 99.79\% training accuracy but only 97.74\% validation, showing it was already memorizing. Adding more would make this worse.
     
-    \item \textbf{Diminishing returns}: Our deeper CNN experiment proved this. Adding a third layer improved accuracy by only 0.26\% despite 8.8\% more parameters.
+    \item \textbf{Diminishing returns}: When I added a third CNN layer, accuracy only improved by 0.26\% despite adding 8.8\% more parameters. The improvement wasn't worth the cost.
     
-    \item \textbf{Bayes error rate}: Every dataset has irreducible error from noise and ambiguity. Pursuing 100\% accuracy means overfitting to noise, not achieving perfection.
+    \item \textbf{Chasing perfection}: No dataset is perfect, there's always some noise or ambiguous examples. Trying to get 100\% accuracy just means you're fitting to the noise.
     
-    \item \textbf{Better alternatives}: Dropout (98.31\%) and early stopping (97.90\%) achieved better generalization than simply training a large model (97.74\%).
+    \item \textbf{Better solutions exist}: Dropout got us to 98.31\% validation accuracy (better than baseline's 97.74\%) without making the model bigger.
 \end{enumerate}
 
-\textbf{Better approach:} Analyze train-validation gap, apply regularization (dropout, early stopping), use appropriate architectures (CNNs for images), and accept that 100\% accuracy is neither achievable nor desirable.
+\textbf{Better approach:} Look at the gap between training and validation accuracy, use regularization techniques like dropout or early stopping, and accept that you can't (and shouldn't) get 100\% accuracy.
 
 \subsection{Question 5.3: Strategies for Avoiding Overfitting}
 
-\subsubsection{Strategy 1: Dropout Regularization}
+\subsubsection{Strategy 1: Dropout}
 
-\textbf{Implementation:} Add dropout layers that randomly deactivate neurons during training ($rate=0.3$).
+Dropout randomly turns off 30\% of neurons during each training step. When I added this to the MLP, validation accuracy improved from 97.74\% to 98.31\%, and the gap between training and validation dropped from 2.05\% to 1.08\%. 
 
-\textbf{Evidence:} Improved validation accuracy from 97.74\% to 98.31\% and reduced train-val gap from 2.05\% to 1.08\%.
-
-\textbf{Why it works:} Forces the network to learn redundant representations, neurons cannot rely on specific others always being present, so the network learns more robust, generalizable features.
+The idea is that neurons can't rely on other specific neurons always being there, so they're forced to learn more general patterns instead of memorizing. It's like studying without knowing which topics will be on the exam,you learn everything more thoroughly instead of just memorizing specific answers.
 
 \subsubsection{Strategy 2: Early Stopping}
 
-\textbf{Implementation:} Monitor validation loss and stop when it plateaus for a patience period (5 epochs).
+This one just stops training when validation loss hasn't improved for 5 epochs in a row. The model stopped at epoch 11 instead of running all 50 epochs (saving 78\% of training time) and actually got slightly better results (97.90\% vs 97.74\%).
 
-\textbf{Evidence:} Training stopped at epoch 11 instead of 50 (78\% reduction) with slight improvement (97.90\% vs 97.74\%).
+Looking at the baseline graph, you can see validation loss starts going up after epoch 10 while training loss keeps dropping, that's exactly when the model starts memorizing instead of learning. Early stopping just catches it at the right moment before that happens.
 
-\textbf{Why it works:} Networks initially learn general patterns, then progressively fit training-specific noise. Early stopping catches the model before memorization begins, as evidenced by our baseline's validation loss increasing after epoch 10.
+\subsubsection{My Recommendation}
 
-\textbf{Recommendation:} Use both together, dropout for better generalization, early stopping for efficiency. Our experiments suggest combining them would yield optimal results.
+Between the two, I'd say use dropout when you want the best accuracy, and early stopping when you want to save time. But honestly, combining both would probably work even better.

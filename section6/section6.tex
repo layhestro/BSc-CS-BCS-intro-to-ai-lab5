@@ -2,7 +2,7 @@
 
 \subsection{Implementation}
 
-To maximize performance while avoiding overfitting, I implemented \textbf{both strategies together}: dropout + early stopping in a single model.
+To maximize performance while avoiding overfitting, I implemented \textbf{both strategies together}: dropout $+$ early stopping in a single model.
 
 \textbf{Code modifications:}
 \begin{lstlisting}[language=Python]
@@ -45,9 +45,7 @@ Early Stop only & 97.72\% & 10 & 1.80\% \\ \hline
 
 The combined approach achieves the \textbf{best generalization performance}:
 \begin{itemize}
-    \item \textbf{Minimal overfitting}: Train-val gap of only 0.67\%—the lowest among all methods, indicating excellent generalization
-    \item \textbf{Excellent efficiency}: Stopped at epoch 12 vs 50 (76\% time reduction) while maintaining strong validation accuracy (97.96\%)
-    \item \textbf{Stable performance}: Comparable validation accuracy to dropout alone (97.96\% vs 98.09\%) but with significantly better generalization characteristics
+    \item \textbf{Minimal overfitting}: Train-val gap of only 0.67\%, the lowest among all methods, showing excellent generalization
+    \item \textbf{Excellent efficiency}: Stopped at epoch 12 vs 50 (76\% time reduction) while having strong validation accuracy (97.96\%)
+    \item \textbf{Stable performance}: Comparable validation accuracy to dropout alone (97.96\% vs 98.09\%) but with significantly better Train-Val gap
 \end{itemize}
-
-This demonstrates that regularization techniques are \textbf{complementary}: dropout forces robust feature learning during training, while early stopping prevents over-training. The 0.67\% train-val gap is the best result across all experiments, making this strategy ideal for production deployment where generalization to new data is critical.
